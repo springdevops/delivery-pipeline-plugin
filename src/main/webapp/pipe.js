@@ -442,6 +442,8 @@ function formatDuration(millis) {
 }
 
 function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild) {
+    if(!confirm("Are you sure you want to execute the next step?")) return;
+
     Q("#manual-" + taskId).hide();
     var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild},
         before;
