@@ -62,6 +62,8 @@ public class Pipeline extends AbstractItem {
 
     private Map<String, Task> allTasks = null;
 
+    private  List<String> parametersValue = null;
+
     public Pipeline(String name, AbstractProject firstProject, AbstractProject lastProject, List<Stage> stages) {
         super(name);
         this.firstProject = firstProject;
@@ -86,7 +88,35 @@ public class Pipeline extends AbstractItem {
         this.aggregated = aggregated;
         this.stages = ImmutableList.copyOf(stages);
         this.timestamp = timestamp;
+        this.parametersValue = null;
     }
+
+    public Pipeline(String name,
+                    AbstractProject firstProject,
+                    AbstractProject lastProject,
+                    String version,
+                    String timestamp,
+                    List<TriggerCause> triggeredBy,
+                    Set<UserInfo> contributors,
+                    List<Stage> stages, boolean aggregated,
+                    List<String> parameters) {
+        super(name);
+        this.firstProject = firstProject;
+        this.lastProject = lastProject;
+        this.version = version;
+        this.triggeredBy = triggeredBy;
+        this.contributors = contributors;
+        this.aggregated = aggregated;
+        this.stages = ImmutableList.copyOf(stages);
+        this.timestamp = timestamp;
+        this.parametersValue = parameters;
+    }
+
+    @Exported
+    public List<String> getParametersValue() {
+        return parametersValue;
+    }
+
 
     @Exported
     public List<Stage> getStages() {
@@ -216,9 +246,13 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, null));
             }
+
+
+            List<String> parameters =  getUnsensitiveParameters( firstProject.getLastBuild() );
+
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, "#"
                     + firstProject.getNextBuildNumber(), pipeLineTimestamp,
-                    TriggerCause.getTriggeredBy(firstProject, null), null, pipelineStages, false);
+                    TriggerCause.getTriggeredBy(firstProject, null), null, pipelineStages, false, parameters);
             result.add(pipelineLatest);
             no--;
         }
@@ -233,14 +267,49 @@ public class Pipeline extends AbstractItem {
             for (Stage stage : getStages()) {
                 pipelineStages.add(stage.createLatestStage(context, firstBuild));
             }
+
+            List<String> parameters =  getUnsensitiveParameters( firstBuild );
+
+
             Pipeline pipelineLatest = new Pipeline(getName(), firstProject, lastProject, firstBuild.getDisplayName(),
                     pipeLineTimestamp, TriggerCause.getTriggeredBy(firstProject, firstBuild),
-                    UserInfo.getContributors(firstBuild), pipelineStages, false);
+                    UserInfo.getContributors(firstBuild), pipelineStages, false, parameters);
             pipelineLatest.setChanges(pipelineChanges);
             pipelineLatest.calculateTotalBuildTime();
             result.add(pipelineLatest);
         }
         return result;
+    }
+
+    /**
+     * Retrieve build parameters in String format without sensitive parameters (passwords, ...)
+     *
+     * @param build the build we retrieve the parameters from
+     * @return a map of parameters names and values
+     */
+    public static List<String> getUnsensitiveParameters(final AbstractBuild<?, ?> build) {
+        final Map<String, String> retval = new java.util.HashMap<String, String>();
+        if (build != null) {
+            retval.putAll(build.getBuildVariables());
+            final java.util.Set<String> sensitiveBuildVariables = build.getSensitiveBuildVariables();
+            if (sensitiveBuildVariables != null) {
+                for (String paramName : sensitiveBuildVariables) {
+                    if (retval.containsKey(paramName)) {
+                        // We have the choice to hide the parameter or to replace it with special characters
+                        retval.put(paramName, "********");
+                    }
+                }
+            }
+        }
+
+        List<String> retList = new ArrayList<String>();
+        for(String entry : retval.keySet()) {
+            String value = retval.get(entry);
+
+            retList.add( entry + ": " + value  );
+        }
+
+        return retList;
     }
 
     @Override

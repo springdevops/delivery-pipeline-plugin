@@ -111,6 +111,12 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html.push(generateChangeLog(pipeline.changes));
                     }
+
+                    if (data.showBuildParameters) {
+                        var p = pipeline.parametersValue.join("<br/>");
+                        html.push('<div class="parameters-box"> <span> Parameters </span><br><span>' +  p + '</span></div>');
+                    }
+
                 }
 
                 html.push('<section class="pipeline">');
@@ -174,6 +180,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                             html.push("</div>");
                         } else {
                             if (!pipeline.aggregated && data.allowRebuild && task.rebuildable) {
+                                html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
+                                html.push("</div>");
+                            }
+                            else if (!pipeline.aggregated && data.allowRebuildFailed && task.status.type == "FAILED" && task.rebuildable) {
                                 html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
                                 html.push("</div>");
                             }
@@ -432,6 +442,8 @@ function formatDuration(millis) {
 }
 
 function triggerManual(taskId, downstreamProject, upstreamProject, upstreamBuild) {
+    if(!confirm("Are you sure you want to execute the next step?")) return;
+
     Q("#manual-" + taskId).hide();
     var formData = {project: downstreamProject, upstream: upstreamProject, buildId: upstreamBuild},
         before;

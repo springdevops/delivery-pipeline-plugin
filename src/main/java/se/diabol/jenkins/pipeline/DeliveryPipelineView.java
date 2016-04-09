@@ -106,6 +106,9 @@ public class DeliveryPipelineView extends View {
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
 
+    private boolean showBuildParameters = false;
+    private boolean allowRebuildFailed = false;
+
     private List<RegExpSpec> regexpFirstJobs;
 
     private transient String error;
@@ -185,8 +188,18 @@ public class DeliveryPipelineView extends View {
         return showTotalBuildTime;
     }
 
+    @Exported
+    public boolean isShowBuildParameters() {
+        return showBuildParameters;
+    }
+
+
     public void setShowTotalBuildTime(boolean showTotalBuildTime) {
         this.showTotalBuildTime = showTotalBuildTime;
+    }
+
+    public void setShowBuildParameters(boolean showBuildParameters) {
+        this.showBuildParameters = showBuildParameters;
     }
 
     public void setShowAggregatedPipeline(boolean showAggregatedPipeline) {
@@ -306,9 +319,19 @@ public class DeliveryPipelineView extends View {
         return allowRebuild;
     }
 
+    @Exported
+    public boolean isAllowRebuildFailed() {
+        return allowRebuildFailed;
+    }
+
     public void setAllowRebuild(boolean allowRebuild) {
         this.allowRebuild = allowRebuild;
     }
+
+    public void setAllowRebuildFailed(boolean allowRebuildFail) {
+        this.allowRebuildFailed = allowRebuildFail;
+    }
+
 
     @Exported
     public boolean isShowDescription()
@@ -450,6 +473,8 @@ public class DeliveryPipelineView extends View {
             pipelines.add(pipeline.createPipelineAggregated(getOwnerItemGroup()));
         }
         pipelines.addAll(pipeline.createPipelineLatest(noOfPipelines, getOwnerItemGroup()));
+
+
         return new Component(name, firstJob.getName(), firstJob.getUrl(), firstJob.isParameterized(), pipelines);
     }
 
@@ -470,6 +495,9 @@ public class DeliveryPipelineView extends View {
         regexpFirstJobs = req.bindJSONToList(RegExpSpec.class, req.getSubmittedForm().get("regexpFirstJobs"));
 
     }
+
+
+
 
     @Override
     public Item doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
