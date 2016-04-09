@@ -177,6 +177,10 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                                 html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
                                 html.push("</div>");
                             }
+                            else if (!pipeline.aggregated && data.allowRebuildFailed && task.status.type == "FAILED" && task.rebuildable) {
+                                html.push('<div class="task-rebuild" id="rebuild-' + id + '" title="Trigger rebuild" onclick="triggerRebuild(\'' + id + '\', \'' + task.id + '\', \'' + task.buildId + '\');">');
+                                html.push("</div>");
+                            }
                         }
 
                         html.push('</div><div class="task-details">');

@@ -198,6 +198,7 @@ public class DeliveryPipelineViewTest {
         assertFalse(view.isAllowManualTriggers());
         assertFalse(view.isShowTotalBuildTime());
         assertFalse(view.isAllowRebuild());
+        assertFalse(view.isAllowRebuildFailed());
         assertFalse(view.isShowDescription());
         assertFalse(view.isShowPromotions());
         assertFalse(view.isShowTestResults());
@@ -227,6 +228,8 @@ public class DeliveryPipelineViewTest {
         assertTrue(view.isShowTotalBuildTime());
         view.setAllowRebuild(true);
         assertTrue(view.isAllowRebuild());
+        view.setAllowRebuildFailed(true);
+        assertTrue(view.isAllowRebuildFailed());
         view.setShowDescription(true);
         assertTrue(view.isShowDescription());
         view.setShowPromotions(true);

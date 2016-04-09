@@ -106,6 +106,8 @@ public class DeliveryPipelineView extends View {
     private boolean showTestResults = false;
     private boolean showStaticAnalysisResults = false;
 
+    private boolean allowRebuildFailed = false;
+
     private List<RegExpSpec> regexpFirstJobs;
 
     private transient String error;
@@ -306,9 +308,19 @@ public class DeliveryPipelineView extends View {
         return allowRebuild;
     }
 
+    @Exported
+    public boolean isAllowRebuildFailed() {
+        return allowRebuildFailed;
+    }
+
     public void setAllowRebuild(boolean allowRebuild) {
         this.allowRebuild = allowRebuild;
     }
+
+    public void setAllowRebuildFailed(boolean allowRebuildFail) {
+        this.allowRebuildFailed = allowRebuildFail;
+    }
+
 
     @Exported
     public boolean isShowDescription()
