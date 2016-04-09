@@ -32,6 +32,7 @@ public class Component extends AbstractItem {
     private final String firstJobUrl;
     private final boolean firstJobParameterized;
 
+
     public Component(String name, String firstJob, String firstJobUrl, boolean firstJobParameterized,
             List<Pipeline> pipelines) {
         super(name);
@@ -39,7 +40,9 @@ public class Component extends AbstractItem {
         this.firstJob = firstJob;
         this.firstJobUrl = firstJobUrl;
         this.firstJobParameterized = firstJobParameterized;
+
     }
+
 
     @Exported
     public List<Pipeline> getPipelines() {

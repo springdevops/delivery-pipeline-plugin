@@ -111,6 +111,12 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
                     if (showChanges && pipeline.changes && pipeline.changes.length > 0) {
                         html.push(generateChangeLog(pipeline.changes));
                     }
+
+                    if (data.showBuildParameters) {
+                        var p = pipeline.parametersValue.join("<br/>");
+                        html.push('<div class="parameters-box"> <span> Parameters </span><br><span>' +  p + '</span></div>');
+                    }
+
                 }
 
                 html.push('<section class="pipeline">');
