@@ -114,6 +114,7 @@ function refreshPipelines(data, divNames, errorDiv, view, showAvatars, showChang
 
                     if (data.showBuildParameters) {
                         var p = pipeline.parametersValue.join("<br/>");
+                        p = p.replace("PIPELINE_VERSION: <br/>", "");
                         html.push('<div class="parameters-box"> <span> Parameters </span><br><span>' +  p + '</span></div>');
                     }
 
